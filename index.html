@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <!-- Header -->
+        <header class="mb-8 flex justify-between items-center">
+            <h1 class="text-4xl font-bold text-gray-800 dark:text-white">
+                ✓ Mi Lista de Tareas
+            </h1>
+            <button id="darkModeToggle" class="p-3 rounded-lg bg-white dark:bg-gray-700 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-110" aria-label="Toggle dark mode">
+                <svg class="w-6 h-6 text-gray-800 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path class="dark:hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    <path class="hidden dark:block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Add Task Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6 transition-all duration-300">
+            <div class="flex gap-3">
+                <input 
+                    type="text" 
+                    id="taskInput" 
+                    placeholder="Añadir nueva tarea..." 
+                    class="flex-1 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors duration-200"
+                    aria-label="Nueva tarea"
+                >
+                <button 
+                    id="addTaskBtn" 
+                    class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                >
+                    Añadir
+                </button>
+            </div>
+        </div>
+
+        <!-- Task List -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-all duration-300">
+            <div class="p-4 bg-gray-50 dark:bg-gray-750 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300">Tareas</h2>
+                <button 
+                    id="clearCompletedBtn" 
+                    class="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg shadow transition-all duration-200 hover:scale-105 active:scale-95"
+                >
+                    Borrar Completadas
+                </button>
+            </div>
+            <ul id="taskList" class="divide-y divide-gray-200 dark:divide-gray-700">
+                <!-- Tasks will be rendered here -->
+            </ul>
+            <div id="emptyState" class="p-8 text-center text-gray-400 dark:text-gray-500 hidden">
+                <svg class="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <p class="text-lg">No hay tareas aún</p>
+                <p class="text-sm">Añade tu primera tarea arriba</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 transition-opacity duration-300">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 transform transition-all duration-300 scale-95" id="editModalContent">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Editar Tarea</h3>
+            <input 
+                type="text" 
+                id="editTaskInput" 
+                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 bg-white dark:bg-gray-700 text-gray-800 dark:text-white mb-4 transition-colors duration-200"
+                aria-label="Editar texto de tarea"
+            >
+            <div class="flex gap-3 justify-end">
+                <button 
+                    id="cancelEditBtn" 
+                    class="px-5 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                >
+                    Cancelar
+                </button>
+                <button 
+                    id="saveEditBtn" 
+                    class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+                >
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/storage.js"></script>
+    <script src="js/tasks.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
